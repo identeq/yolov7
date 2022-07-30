@@ -7,12 +7,12 @@ sys.path.append('./')  # to run '$ python *.py' files in subdirectories
 import torch
 import torch.nn as nn
 
-import models
-from models.experimental import attempt_load, End2End
-from utils.activations import Hardswish, SiLU
-from utils.general import set_logging, check_img_size
-from utils.torch_utils import select_device
-from utils.add_nms import RegisterNMS
+from yolov7 import models
+from yolov7.models.experimental import attempt_load, End2End
+from yolov7.utils.activations import Hardswish, SiLU
+from yolov7.utils.general import set_logging, check_img_size
+from yolov7.utils.torch_utils import select_device
+from yolov7.utils.add_nms import RegisterNMS
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
