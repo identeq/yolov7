@@ -15,7 +15,7 @@ from yolov7.utils.google_utils import attempt_download
 from yolov7.utils.torch_utils import select_device
 
 dependencies = ['torch', 'yaml']
-check_requirements(Path(__file__).parent / 'requirements.txt', exclude=('pycocotools', 'thop'))
+check_requirements(Path(__file__).parent.parent / 'requirements.txt', exclude=('pycocotools', 'thop'))
 set_logging()
 
 
@@ -86,12 +86,13 @@ if __name__ == '__main__':
     model = custom(path_or_model='yolov7.pt')  # custom example
     # model = create(name='yolov7', pretrained=True, channels=3, classes=80, autoshape=True)  # pretrained example
 
-    # Verify inference
-    import numpy as np
-    from PIL import Image
+    # # Verify inference
+    # import numpy as np
+    #
+    # imgs = [np.zeros((640, 480, 3))]
+    #
+    # results = model(imgs)  # batched inference
+    # results.print()
+    # results.save()
 
-    imgs = [np.zeros((640, 480, 3))]
-
-    results = model(imgs)  # batched inference
-    results.print()
-    results.save()
+    torch.save(model.state_dict(), 'yolov7-1.pt')

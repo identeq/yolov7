@@ -1,4 +1,16 @@
+import os
+import platform
 import random
+import sys
+# sys.path.insert(0, './yolov7')
+from pathlib import Path
+
+FILE = Path(__file__).resolve()
+ROOT = FILE.parents[1]  # YOLOv5 root directory
+if str(ROOT) not in sys.path:
+    sys.path.append(str(ROOT))  # add ROOT to PATH
+if platform.system() != 'Windows':
+    ROOT = Path(os.path.relpath(ROOT, Path.cwd()))  # relative
 
 from yolov7.models.common import *
 from yolov7.utils.google_utils import attempt_download
@@ -233,6 +245,32 @@ class End2End(nn.Module):
 
 
 def attempt_load(weights, map_location=None):
+    # Loads an ensemble of models weights=[a,b,c] or a single model weights=[a] or weights=a
+    model = Ensemble()
+    for w in weights if isinstance(weights, list) else [weights]:
+        attempt_download(w)
+        ckpt = torch.load(w, map_location=map_location)  # load
+        model.append(ckpt['ema' if ckpt.get('ema') else 'model'].float().fuse().eval())  # FP32 model
+
+    # Compatibility updates
+    for m in model.modules():
+        if type(m) in [nn.Hardswish, nn.LeakyReLU, nn.ReLU, nn.ReLU6, nn.SiLU]:
+            m.inplace = True  # pytorch 1.7.0 compatibility
+        elif type(m) is nn.Upsample:
+            m.recompute_scale_factor = None  # torch 1.11.0 compatibility
+        elif type(m) is Conv:
+            m._non_persistent_buffers_set = set()  # pytorch 1.6.0 compatibility
+
+    if len(model) == 1:
+        return model[-1]  # return model
+    else:
+        print('Ensemble created with %s\n' % weights)
+        for k in ['names', 'stride']:
+            setattr(model, k, getattr(model[-1], k))
+        return model  # return ensemble
+
+
+def attempt_load_v1(weights, map_location=None):
     # Loads an ensemble of models weights=[a,b,c] or a single model weights=[a] or weights=a
     model = Ensemble()
     for w in weights if isinstance(weights, list) else [weights]:

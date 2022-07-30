@@ -9,7 +9,7 @@ from numpy import random
 
 from yolov7.models.experimental import attempt_load
 from yolov7.utils.datasets import LoadStreams, LoadImages
-from yolov7.utils.general import check_img_size, check_requirements, check_imshow, non_max_suppression, apply_classifier, \
+from yolov7.utils.general import check_img_size, check_imshow, non_max_suppression, apply_classifier, \
     scale_coords, xyxy2xywh, strip_optimizer, set_logging, increment_path
 from yolov7.utils.plots import plot_one_box
 from yolov7.utils.torch_utils import select_device, load_classifier, time_synchronized, TracedModel
@@ -117,7 +117,7 @@ def detect(save_img=False):
                         plot_one_box(xyxy, im0, label=label, color=colors[int(cls)], line_thickness=3)
 
             # Print time (inference + NMS)
-            #print(f'{s}Done. ({t2 - t1:.3f}s)')
+            # print(f'{s}Done. ({t2 - t1:.3f}s)')
 
             # Stream results
             if view_img:
@@ -146,7 +146,7 @@ def detect(save_img=False):
 
     if save_txt or save_img:
         s = f"\n{len(list(save_dir.glob('labels/*.txt')))} labels saved to {save_dir / 'labels'}" if save_txt else ''
-        #print(f"Results saved to {save_dir}{s}")
+        # print(f"Results saved to {save_dir}{s}")
 
     print(f'Done. ({time.time() - t0:.3f}s)')
 
@@ -173,7 +173,7 @@ if __name__ == '__main__':
     parser.add_argument('--no-trace', action='store_true', help='don`t trace model')
     opt = parser.parse_args()
     print(opt)
-    #check_requirements(exclude=('pycocotools', 'thop'))
+    # check_requirements(exclude=('pycocotools', 'thop'))
 
     with torch.no_grad():
         if opt.update:  # update all models (to fix SourceChangeWarning)
