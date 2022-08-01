@@ -53,7 +53,9 @@ class YoloV7Detector:
             det[:, :4] = scale_coords(img.shape[2:], det[:, :4], image.shape).round()
             for *xyxy, conf, cls in reversed(det):
                 t, l, b, r = np.array(xyxy).astype(int)
-                boxes.append([t, l, b, r])
+                w = r - l
+                h = b - t
+                boxes.append([t, l, w, h])
                 confidences.append(float(conf))
                 class_ids.append(int(cls))
         return boxes, class_ids, confidences
@@ -61,6 +63,14 @@ class YoloV7Detector:
 
 if __name__ == '__main__':
     yolo = YoloV7Detector("yolov7.pt")
-    image = cv2.imread("inference/images/horses.jpg")
-    pred = yolo.detect(image)
-    print(pred)
+    images = ["inference/images/bus.jpg", "inference/images/horses.jpg", "inference/images/image1.jpg",
+              "inference/images/image2.jpg"]
+    for image in images:
+        img = cv2.imread(image)
+        boxes, class_ids, confidences = yolo.detect(img)
+        for box, cls_id, conf in zip(boxes, class_ids, confidences):
+            cv2.rectangle(img, (box[0], box[1]), (box[0] + box[3], box[1] + box[2]), (0, 255, 0), 2)
+            text = str(yolo.labels[cls_id]) + ": {:.2f}".format(conf)
+            cv2.putText(img, text, (box[0], box[1]), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+        cv2.imshow("image", img)
+        cv2.waitKey(0)
