@@ -53,9 +53,7 @@ class YoloV7Detector:
             det[:, :4] = scale_coords(img.shape[2:], det[:, :4], image.shape).round()
             for *xyxy, conf, cls in reversed(det):
                 t, l, b, r = np.array(xyxy).astype(int)
-                w = r - l
-                h = b - t
-                boxes.append([t, l, w, h])
+                boxes.append([t, l, b, r])
                 confidences.append(float(conf))
                 class_ids.append(int(cls))
         return boxes, class_ids, confidences
