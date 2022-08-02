@@ -9,8 +9,8 @@ from yolov7.utils.torch_utils import select_device
 
 
 class YoloV7Detector:
-    def __init__(self, model_name="yolov7.pt", img_size=640):
-        self.device = select_device()
+    def __init__(self, model_name="yolov7.pt", img_size=640, device=''):
+        self.device = select_device(device=device)
         self.half = self.device.type != 'cpu'  # half precision only supported on CUDA
 
         self.model = attempt_load(model_name, map_location=self.device)  # load FP32 model
