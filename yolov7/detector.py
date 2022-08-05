@@ -56,3 +56,6 @@ class YoloV7Detector:
                 confidences.append(float(conf))
                 class_ids.append(int(cls))
         return boxes, class_ids, confidences
+
+    def labels2ids(self, labels: list[str]):
+        return [self.labels.index(label) for label in labels]
