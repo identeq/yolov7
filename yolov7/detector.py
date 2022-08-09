@@ -33,11 +33,8 @@ class YoloV7Detector:
         self._id2labels = {i: label for i, label in enumerate(self.labels)}
         self._labels2ids = {label: i for i, label in enumerate(self.labels)}
 
+    @torch.no_grad()
     def detect(self, image, thresh=0.25, iou_thres=0.45, classes=None, agnostic=True):
-        with torch.no_grad():
-            return self._detect(image, thresh, iou_thres, classes, agnostic)
-
-    def _detect(self, image, thresh=0.25, iou_thres=0.45, classes=None, agnostic=True):
         # Padded resize
         img = letterbox(image, self.img_size, stride=self.stride)[0]
 
