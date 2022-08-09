@@ -1,3 +1,5 @@
+from typing import List
+
 import numpy as np
 import torch
 from numpy import random
@@ -28,8 +30,14 @@ class YoloV7Detector:
         if self.device.type != 'cpu':
             self.model(torch.zeros(1, 3, self.img_size, self.img_size).to(self.device).type_as(
                 next(self.model.parameters())))  # run once
+        self._id2labels = {i: label for i, label in enumerate(self.labels)}
+        self._labels2ids = {label: i for i, label in enumerate(self.labels)}
 
     def detect(self, image, thresh=0.25, iou_thres=0.45, classes=None, agnostic=True):
+        with torch.no_grad():
+            return self._detect(image, thresh, iou_thres, classes, agnostic)
+
+    def _detect(self, image, thresh=0.25, iou_thres=0.45, classes=None, agnostic=True):
         # Padded resize
         img = letterbox(image, self.img_size, stride=self.stride)[0]
 
@@ -57,5 +65,5 @@ class YoloV7Detector:
                 class_ids.append(int(cls))
         return boxes, class_ids, confidences
 
-    def labels2ids(self, labels: list[str]):
-        return [self.labels.index(label) for label in labels]
+    def labels2ids(self, labels: List[str]):
+        return [self._labels2ids[label] for label in labels]

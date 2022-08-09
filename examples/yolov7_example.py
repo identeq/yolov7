@@ -29,7 +29,7 @@ def detect_and_plot(model, image):
 
 def video_example():
     import time
-    yolo = YoloV7Detector("yolov7.pt", img_size=320, device="cpu")
+    yolo = YoloV7Detector("yolov7.pt", img_size=320, device="")
     url = "/home/ashok/Documents/identeq_data/vehicle_videos/VID_20220729_085033.mp4"
     cap = cv2.VideoCapture(url)
     assert cap.isOpened(), f'Failed to open {url}'
