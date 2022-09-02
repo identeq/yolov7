@@ -1,0 +1,8 @@
+train: /home/ashok/Documents/identeq_data/np_cam_license_plate_dataset_v3_splitted/train
+test: /home/ashok/Documents/identeq_data/np_cam_license_plate_dataset_v3_splitted/val
+val: /home/ashok/Documents/identeq_data/np_cam_license_plate_dataset_v3_splitted/val
+#Classes
+nc: 1 # replace classes count
+#classes names
+#replace all class names list with your custom classes
+names: ['license_plate']

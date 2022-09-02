@@ -10,20 +10,19 @@ def image_example():
               "inference/images/image2.jpg"]
     for image in images:
         img = cv2.imread(image)
-        boxes, class_ids, confidences = yolo.detect(img)
-        for box, cls_id, conf in zip(boxes, class_ids, confidences):
-            cv2.rectangle(img, (box[0], box[1]), (box[2], box[3]), (0, 255, 0), 2)
-            text = str(yolo.labels[cls_id]) + ": {:.2f}".format(conf)
-            cv2.putText(img, text, (box[0], box[1]), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+        img = detect_and_plot(yolo, img)
         cv2.imshow("image", img)
         cv2.waitKey(0)
 
 
 def detect_and_plot(model, image):
-    boxes, class_ids, confidences = model.detect(image)
-    for box, cls_id, conf in zip(boxes, class_ids, confidences):
-        label = f'{model.labels[cls_id]} {conf:.2f}'
-        plot_one_box(box, image, label=label, color=model.colors[cls_id], line_thickness=3)
+    targets = None  # ['car', 'motorcycle', 'truck', 'bus']
+    # image = cv2.resize(image, (1920, int(image.shape[0]/(image.shape[1] / 1920))))
+    print(image.shape)
+    detections = model.detect(image, classes_labels=targets)
+    for detection in detections:
+        label = f'{detection.label} {detection.confidence:.2f}'
+        plot_one_box(detection.bbox, image, label=label, color=model.colors[detection.class_id], line_thickness=3)
     return image
 
 
@@ -33,34 +32,32 @@ def video_example():
     url = "/home/ashok/Documents/identeq_data/vehicle_videos/VID_20220729_085033.mp4"
     cap = cv2.VideoCapture(url)
     assert cap.isOpened(), f'Failed to open {url}'
-    w = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
-    h = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
     fps = cap.get(cv2.CAP_PROP_FPS) % 100
     print("FPS:", fps)
     start_time = time.time()
-    end_time = time.time()
-    processing_fps = 0
     processed_frames = 0
-    n = 0
+    skip_num_frames = 3
     while cap.isOpened():
-        n += 1
-        cap.grab()
-        if n % 4 == 0:  # read every 4th frame
-            success, img = cap.retrieve()
-            if not success:
-                break
-            t = time.time()
-            img = detect_and_plot(yolo, img)
-            processed_frames += 1
-            t = time.time() - t
-            print(f"Time: {t:.3f} sec.")
-            cv2.imshow("image", img)
-            cv2.waitKey(1)
-            n = 0
-        time.sleep(1 / fps)  # wait time
+        if skip_num_frames > 0:
+            for i in range(skip_num_frames):
+                cap.grab()
+        else:
+            cap.grab()
+        success, img = cap.retrieve()
+        if not success:
+            break
+        t = time.time()
+        img = detect_and_plot(yolo, img)
+        processed_frames += 1
+        t = time.time() - t
         end_time = time.time()
         processing_fps = processed_frames / (end_time - start_time)
+        cv2.imshow("Image", img)
+        time.sleep(1 / fps)
+        print(f"Time: {t:.3f} sec.")
         print(f"Processing FPS: {processing_fps:.2f}")
+        if cv2.waitKey(1) == 27:
+            break
 
     cap.release()
     cv2.destroyAllWindows()
