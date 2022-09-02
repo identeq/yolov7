@@ -139,8 +139,8 @@ class YoloV7Detector:
                 class_ids.append(int(cls))
         else:
             return []
-        class_labels = [self._id2labels[label] for label in class_ids]
-        detections = _postprocess(boxes, confidences, class_ids, class_labels, image.shape[1], image.shape[0])
+        labels = [self._id2labels[class_id] for class_id in class_ids]
+        detections = _postprocess(boxes, confidences, class_ids, labels, image.shape[1], image.shape[0])
         return detections
 
     def labels2ids(self, labels: List[str]):
