@@ -18,8 +18,7 @@ def image_example():
 def detect_and_plot(model, image):
     targets = None  # ['car', 'motorcycle', 'truck', 'bus']
     # image = cv2.resize(image, (1920, int(image.shape[0]/(image.shape[1] / 1920))))
-    print(image.shape)
-    detections = model.detect(image, classes_labels=targets)
+    detections = model.detect(image, class_labels=targets)
     for detection in detections:
         label = f'{detection.label} {detection.confidence:.2f}'
         plot_one_box(detection.bbox, image, label=label, color=model.colors[detection.class_id], line_thickness=3)
@@ -28,8 +27,10 @@ def detect_and_plot(model, image):
 
 def video_example():
     import time
-    yolo = YoloV7Detector("yolov7.pt", img_size=320, device="")
+    yolo = YoloV7Detector("yolov7.pt", img_size=640, device="")
     url = "/home/ashok/Documents/identeq_data/vehicle_videos/VID_20220729_085033.mp4"
+    url = "/home/ashok/Documents/identeq_data/vehicle_videos/back_camera/recordings/20220901163847623_DS-2CD2T63G0-I5 treeleaf_C60765827.mp4"
+    url = "/home/ashok/Documents/identeq_data/vehicle_videos/back_camera/recordings/20220901170309805_DS-2CD2T63G0-I5 treeleaf_C60765827.mp4"
     cap = cv2.VideoCapture(url)
     assert cap.isOpened(), f'Failed to open {url}'
     fps = cap.get(cv2.CAP_PROP_FPS) % 100

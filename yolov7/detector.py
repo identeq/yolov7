@@ -117,14 +117,14 @@ class YoloV7Detector:
         self._labels2ids = {label: i for i, label in enumerate(self.labels)}
 
     @torch.no_grad()
-    def detect(self, image, thresh=0.25, iou_thresh=0.45, classes=None, classes_labels=None, agnostic=True):
+    def detect(self, image, thresh=0.25, iou_thresh=0.45, classes=None, class_labels=None, agnostic=True):
         """:
         """
         img = _preprocess(image, input_shape=(self.img_size, self.img_size), letter_box=True, half=self.half,
                           device=self.device)
         pred = self.model(img, augment=False)[0]
-        if not classes and classes_labels:
-            classes = self.labels2ids(classes_labels)
+        if not classes and class_labels:
+            classes = self.labels2ids(class_labels)
         pred = non_max_suppression(pred, thresh, iou_thres=iou_thresh, classes=classes, agnostic=agnostic)
         det = pred[0]
         boxes = []
