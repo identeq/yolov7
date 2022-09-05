@@ -5,6 +5,7 @@ import numpy as np
 import torch
 from numpy import random
 
+from build.lib.yolov7.utils.datasets import letterbox
 from yolov7.models.experimental import attempt_load
 from yolov7.utils.general import check_img_size, non_max_suppression, scale_coords
 from yolov7.utils.torch_utils import select_device
@@ -54,20 +55,9 @@ class BoundingBox:
         return f'BoundingBox(class_id: {self.class_id}, label: {self.label}, bbox: {self.bbox}, confidence: {self.confidence:.2f})'
 
 
-def _preprocess(img, input_shape, letter_box=True, half=False, device=None):
+def _preprocess(img, input_shape, stride, letter_box=True, half=False, device=None):
     if letter_box:
-        img_h, img_w, _ = img.shape
-        new_h, new_w = input_shape[0], input_shape[1]
-        offset_h, offset_w = 0, 0
-        if (new_w / img_w) <= (new_h / img_h):
-            new_h = int(img_h * new_w / img_w)
-            offset_h = (input_shape[0] - new_h) // 2
-        else:
-            new_w = int(img_w * new_h / img_h)
-            offset_w = (input_shape[1] - new_w) // 2
-        resized = cv2.resize(img, (new_w, new_h))
-        img = np.full((input_shape[0], input_shape[1], 3), 127, dtype=np.uint8)
-        img[offset_h:(offset_h + new_h), offset_w:(offset_w + new_w), :] = resized
+        img = letterbox(img, input_shape, stride=stride)[0]
     else:
         img = cv2.resize(img, (input_shape[1], input_shape[0]))
 
@@ -120,8 +110,10 @@ class YoloV7Detector:
     def detect(self, image, thresh=0.25, iou_thresh=0.45, classes=None, class_labels=None, agnostic=True):
         """:
         """
-        img = _preprocess(image, input_shape=(self.img_size, self.img_size), letter_box=True, half=self.half,
-                          device=self.device)
+        if image.shape[0] == 0 or image.shape[1] == 0:
+            return []
+        img = _preprocess(image, input_shape=(self.img_size, self.img_size), stride=self.stride, letter_box=True,
+                          half=self.half, device=self.device)
         pred = self.model(img, augment=False)[0]
         if not classes and class_labels:
             classes = self.labels2ids(class_labels)
