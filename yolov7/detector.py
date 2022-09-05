@@ -5,8 +5,8 @@ import numpy as np
 import torch
 from numpy import random
 
-from yolov7.utils.datasets import letterbox
 from yolov7.models.experimental import attempt_load
+from yolov7.utils.datasets import letterbox
 from yolov7.utils.general import check_img_size, non_max_suppression, scale_coords
 from yolov7.utils.torch_utils import select_device
 
@@ -17,7 +17,7 @@ class BoundingBox:
         self.label = label
         self.confidence = confidence
         self.bbox = bbox  # t,l,b,r or x1,y1,x2,y2
-        self.bbox_normalized = np.array(bbox) / (image_width, image_height, image_width, image_height)
+        self.bbox_normalized = np.array(bbox) / (image_height, image_width, image_height, image_width)
         self.__x1 = bbox[0]
         self.__y1 = bbox[1]
         self.__x2 = bbox[2]
