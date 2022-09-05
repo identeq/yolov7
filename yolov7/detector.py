@@ -5,7 +5,7 @@ import numpy as np
 import torch
 from numpy import random
 
-from build.lib.yolov7.utils.datasets import letterbox
+from yolov7.utils.datasets import letterbox
 from yolov7.models.experimental import attempt_load
 from yolov7.utils.general import check_img_size, non_max_suppression, scale_coords
 from yolov7.utils.torch_utils import select_device
