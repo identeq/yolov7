@@ -118,7 +118,7 @@ class YoloV7Detector:
         if not classes and class_labels:
             classes = self.labels2ids(class_labels)
         pred = non_max_suppression(pred, thresh, iou_thres=iou_thresh, classes=classes, agnostic=agnostic)
-        det = pred[0]
+        det = pred[0].cpu()
         boxes = []
         confidences = []
         class_ids = []
